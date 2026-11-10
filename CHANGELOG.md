@@ -6,6 +6,8 @@ All notable changes to this integration are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-10
+
 ### Added
 
 - First version of the Seafile integration: reads a Seafile server over the local network,
@@ -25,4 +27,5 @@ All notable changes to this integration are documented here. The format follows
 - Accept a self-signed certificate (opt-in).
 - English, French, German and Spanish: configuration screen, messages, widget and documentation.
 
-[Unreleased]: https://github.com/prohand/gladys-seafile/commits/main
+[Unreleased]: https://github.com/prohand/gladys-seafile/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/prohand/gladys-seafile/releases/tag/v1.0.1

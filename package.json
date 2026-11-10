@@ -1,6 +1,6 @@
 {
   "name": "gladys-seafile",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Gladys Assistant external integration for Seafile servers: storage, quota, libraries and server health.",
   "type": "module",
