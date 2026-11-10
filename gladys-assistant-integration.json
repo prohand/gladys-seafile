@@ -1,0 +1,798 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Seafile",
+  "description": {
+    "en": "Monitor your Seafile server: storage, quota, libraries and availability.",
+    "fr": "Surveillez votre serveur Seafile : stockage, quota, bibliothèques et disponibilité.",
+    "de": "Überwache deinen Seafile-Server: Speicher, Kontingent, Bibliotheken, Erreichbarkeit.",
+    "es": "Supervise su servidor Seafile: almacenamiento, cuota, bibliotecas y disponibilidad."
+  },
+  "version": "1.0.0",
+  "docker_image": "ghcr.io/prohand/gladys-seafile:1.0.0",
+  "gladys_version": ">=5.3.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-seafile/main/cover.png",
+  "categories": ["network", "services"],
+  "keywords": [
+    "seafile",
+    "seafile pro",
+    "cloud privé",
+    "private cloud",
+    "nas",
+    "self-hosted",
+    "file sync",
+    "stockage",
+    "quota",
+    "bibliothèque"
+  ],
+  "transports": ["local"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "The integration reads your Seafile server over your network: the storage and quota of an account, its libraries, and the server statistics when the account is a system admin. Give the address of the server and an API token (Seafile: Settings → Web API Auth Token), or a username and a password. Nothing is written on the server.",
+        "fr": "L'intégration lit votre serveur Seafile sur votre réseau : le stockage et le quota d'un compte, ses bibliothèques, et les statistiques du serveur si le compte est administrateur système. Indiquez l'adresse du serveur et un jeton d'API (Seafile : Paramètres → Web API Auth Token), ou un identifiant et un mot de passe. Rien n'est écrit sur le serveur.",
+        "de": "Die Integration liest deinen Seafile-Server über dein Netzwerk: Speicher und Kontingent eines Kontos, seine Bibliotheken und die Serverstatistik, wenn das Konto Systemadministrator ist. Gib die Adresse des Servers und ein API-Token an (Seafile: Einstellungen → Web API Auth Token), oder Benutzername und Passwort. Auf dem Server wird nichts geschrieben.",
+        "es": "La integración lee su servidor Seafile a través de su red: el almacenamiento y la cuota de una cuenta, sus bibliotecas y las estadísticas del servidor si la cuenta es administrador del sistema. Indique la dirección del servidor y un token de API (Seafile: Ajustes → Web API Auth Token), o un usuario y una contraseña. No se escribe nada en el servidor."
+      },
+      "links": [
+        {
+          "url": "https://github.com/prohand/gladys-seafile/blob/main/docs/en.md",
+          "label": {
+            "en": "Integration documentation",
+            "fr": "Documentation de l'intégration",
+            "de": "Dokumentation der Integration",
+            "es": "Documentación de la integración"
+          }
+        },
+        {
+          "url": "https://manual.seafile.com/",
+          "label": {
+            "en": "Seafile manual",
+            "fr": "Manuel de Seafile",
+            "de": "Seafile-Handbuch",
+            "es": "Manual de Seafile"
+          }
+        }
+      ]
+    },
+    {
+      "key": "server_url",
+      "type": "string",
+      "label": {
+        "en": "Server address",
+        "fr": "Adresse du serveur",
+        "de": "Serveradresse",
+        "es": "Dirección del servidor"
+      },
+      "description": {
+        "en": "The address you open Seafile at in a browser, e.g. https://seafile.example.com or http://192.168.1.20:8000. Without http(s)://, https is assumed.",
+        "fr": "L'adresse à laquelle vous ouvrez Seafile dans un navigateur, par exemple https://seafile.example.com ou http://192.168.1.20:8000. Sans http(s)://, https est supposé.",
+        "de": "Die Adresse, unter der du Seafile im Browser öffnest, z. B. https://seafile.example.com oder http://192.168.1.20:8000. Ohne http(s):// wird https angenommen.",
+        "es": "La dirección con la que abre Seafile en un navegador, p. ej. https://seafile.example.com o http://192.168.1.20:8000. Sin http(s)://, se supone https."
+      },
+      "required": true,
+      "placeholder": {
+        "en": "https://seafile.example.com",
+        "fr": "https://seafile.example.com",
+        "de": "https://seafile.example.com",
+        "es": "https://seafile.example.com"
+      }
+    },
+    {
+      "key": "api_token",
+      "type": "secret",
+      "label": {
+        "en": "API token",
+        "fr": "Jeton d'API",
+        "de": "API-Token",
+        "es": "Token de API"
+      },
+      "description": {
+        "en": "Recommended. In Seafile: your avatar → Settings → Web API Auth Token → Generate. It wins over the username and password, and works with two-factor authentication.",
+        "fr": "Recommandé. Dans Seafile : votre avatar → Paramètres → Web API Auth Token → Générer. Il prime sur l'identifiant et le mot de passe, et fonctionne avec la double authentification.",
+        "de": "Empfohlen. In Seafile: dein Avatar → Einstellungen → Web API Auth Token → Generieren. Es hat Vorrang vor Benutzername und Passwort und funktioniert mit Zwei-Faktor-Authentifizierung.",
+        "es": "Recomendado. En Seafile: su avatar → Ajustes → Web API Auth Token → Generar. Tiene prioridad sobre el usuario y la contraseña, y funciona con la verificación en dos pasos."
+      },
+      "required": false
+    },
+    {
+      "key": "username",
+      "type": "string",
+      "label": {
+        "en": "Username",
+        "fr": "Identifiant",
+        "de": "Benutzername",
+        "es": "Usuario"
+      },
+      "description": {
+        "en": "Only without an API token: the email (or login ID) of the account.",
+        "fr": "Uniquement sans jeton d'API : l'e-mail (ou l'identifiant de connexion) du compte.",
+        "de": "Nur ohne API-Token: die E-Mail-Adresse (oder Login-ID) des Kontos.",
+        "es": "Solo sin token de API: el correo (o ID de inicio de sesión) de la cuenta."
+      },
+      "required": false,
+      "placeholder": {
+        "en": "me@example.com",
+        "fr": "moi@exemple.fr",
+        "de": "ich@beispiel.de",
+        "es": "yo@ejemplo.es"
+      }
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "description": {
+        "en": "Only without an API token. Exchanged for a token that shows in Seafile as the linked device \"Gladys Assistant\", where you can revoke it.",
+        "fr": "Uniquement sans jeton d'API. Échangé contre un jeton qui apparaît dans Seafile comme l'appareil lié « Gladys Assistant », où vous pouvez le révoquer.",
+        "de": "Nur ohne API-Token. Wird gegen ein Token getauscht, das in Seafile als verknüpftes Gerät „Gladys Assistant“ erscheint, wo du es widerrufen kannst.",
+        "es": "Solo sin token de API. Se intercambia por un token que aparece en Seafile como el dispositivo vinculado «Gladys Assistant», donde puede revocarlo."
+      },
+      "required": false
+    },
+    {
+      "key": "allow_self_signed",
+      "type": "boolean",
+      "label": {
+        "en": "Accept a self-signed certificate",
+        "fr": "Accepter un certificat auto-signé",
+        "de": "Selbstsigniertes Zertifikat akzeptieren",
+        "es": "Aceptar un certificado autofirmado"
+      },
+      "description": {
+        "en": "Turn on only if your server uses https with a certificate it signed itself.",
+        "fr": "À activer uniquement si votre serveur utilise https avec un certificat qu'il a signé lui-même.",
+        "de": "Nur einschalten, wenn dein Server https mit einem selbst signierten Zertifikat nutzt.",
+        "es": "Actívelo solo si su servidor usa https con un certificado firmado por él mismo."
+      },
+      "required": false,
+      "default": false
+    },
+    {
+      "key": "poll_frequency",
+      "type": "number",
+      "label": {
+        "en": "Refresh interval (s)",
+        "fr": "Intervalle de rafraîchissement (s)",
+        "de": "Aktualisierungsintervall (s)",
+        "es": "Intervalo de actualización (s)"
+      },
+      "description": {
+        "en": "How often the server is read, in seconds.",
+        "fr": "Fréquence de lecture du serveur, en secondes.",
+        "de": "Wie oft der Server gelesen wird, in Sekunden.",
+        "es": "Frecuencia de lectura del servidor, en segundos."
+      },
+      "required": false,
+      "default": 300,
+      "min": 60,
+      "max": 3600
+    },
+    {
+      "key": "quota_alert_percent",
+      "type": "number",
+      "label": {
+        "en": "Quota alert threshold (%)",
+        "fr": "Seuil d'alerte du quota (%)",
+        "de": "Warnschwelle Kontingent (%)",
+        "es": "Umbral de alerta de cuota (%)"
+      },
+      "description": {
+        "en": "The \"Quota threshold crossed\" scene trigger fires when the account goes over this share of its quota.",
+        "fr": "Le déclencheur de scène « Seuil de quota dépassé » se déclenche quand le compte dépasse cette part de son quota.",
+        "de": "Der Szenenauslöser „Kontingentschwelle überschritten“ wird ausgelöst, wenn das Konto diesen Anteil seines Kontingents überschreitet.",
+        "es": "El disparador de escena «Umbral de cuota superado» se activa cuando la cuenta supera esta parte de su cuota."
+      },
+      "required": false,
+      "default": 90,
+      "min": 1,
+      "max": 100
+    },
+    {
+      "key": "library_devices",
+      "type": "boolean",
+      "label": {
+        "en": "Libraries as devices",
+        "fr": "Bibliothèques comme appareils",
+        "de": "Bibliotheken als Geräte",
+        "es": "Bibliotecas como dispositivos"
+      },
+      "description": {
+        "en": "Also publish one device per library the account owns, with its size and number of files.",
+        "fr": "Publie aussi un appareil par bibliothèque appartenant au compte, avec sa taille et son nombre de fichiers.",
+        "de": "Veröffentlicht zusätzlich ein Gerät pro Bibliothek des Kontos, mit Größe und Anzahl der Dateien.",
+        "es": "Publica también un dispositivo por cada biblioteca de la cuenta, con su tamaño y número de archivos."
+      },
+      "required": false,
+      "default": false
+    },
+    {
+      "key": "library_names",
+      "type": "string",
+      "label": {
+        "en": "Library names",
+        "fr": "Noms des bibliothèques",
+        "de": "Namen der Bibliotheken",
+        "es": "Nombres de las bibliotecas"
+      },
+      "description": {
+        "en": "Only these libraries become devices, separated by commas. Empty: all of them. \"List the libraries\" shows their names.",
+        "fr": "Seules ces bibliothèques deviennent des appareils, séparées par des virgules. Vide : toutes. « Lister les bibliothèques » affiche leurs noms.",
+        "de": "Nur diese Bibliotheken werden zu Geräten, durch Kommas getrennt. Leer: alle. „Bibliotheken auflisten“ zeigt ihre Namen.",
+        "es": "Solo estas bibliotecas se convierten en dispositivos, separadas por comas. Vacío: todas. «Listar las bibliotecas» muestra sus nombres."
+      },
+      "required": false,
+      "placeholder": {
+        "en": "Photos, Documents",
+        "fr": "Photos, Documents",
+        "de": "Fotos, Dokumente",
+        "es": "Fotos, Documentos"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "list_libraries",
+      "label": {
+        "en": "List the libraries",
+        "fr": "Lister les bibliothèques",
+        "de": "Bibliotheken auflisten",
+        "es": "Listar las bibliotecas"
+      },
+      "timeout_seconds": 30
+    }
+  ],
+  "widgets": [
+    {
+      "key": "seafile",
+      "label": {
+        "en": "Seafile",
+        "fr": "Seafile",
+        "de": "Seafile",
+        "es": "Seafile"
+      },
+      "description": {
+        "en": "Storage, quota, largest libraries and server status.",
+        "fr": "Stockage, quota, plus grosses bibliothèques et état du serveur.",
+        "de": "Speicher, Kontingent, größte Bibliotheken und Serverstatus.",
+        "es": "Almacenamiento, cuota, bibliotecas más grandes y estado del servidor."
+      },
+      "icon": "hard-drive",
+      "settings": [
+        {
+          "key": "libraries",
+          "type": "number",
+          "label": {
+            "en": "Libraries shown",
+            "fr": "Bibliothèques affichées",
+            "de": "Angezeigte Bibliotheken",
+            "es": "Bibliotecas mostradas"
+          },
+          "description": {
+            "en": "How many of the largest libraries are listed (0 to 8).",
+            "fr": "Nombre de plus grosses bibliothèques listées (0 à 8).",
+            "de": "Wie viele der größten Bibliotheken aufgelistet werden (0 bis 8).",
+            "es": "Cuántas de las bibliotecas más grandes se listan (0 a 8)."
+          },
+          "required": false,
+          "default": 5,
+          "min": 0,
+          "max": 8
+        }
+      ],
+      "action_timeout_seconds": 30
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "server_unreachable",
+      "label": {
+        "en": "The Seafile server is unreachable",
+        "fr": "Le serveur Seafile est injoignable",
+        "de": "Der Seafile-Server ist nicht erreichbar",
+        "es": "El servidor Seafile está inaccesible"
+      },
+      "description": {
+        "en": "It stopped answering, or refused the credentials. Fires once per outage.",
+        "fr": "Il ne répond plus, ou refuse les identifiants. Se déclenche une fois par panne.",
+        "de": "Er antwortet nicht mehr oder lehnt die Zugangsdaten ab. Wird einmal pro Ausfall ausgelöst.",
+        "es": "Ha dejado de responder o rechaza las credenciales. Se activa una vez por corte."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Seafile server",
+            "fr": "Serveur Seafile",
+            "de": "Seafile-Server",
+            "es": "Servidor Seafile"
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "server_name",
+          "type": "string",
+          "label": {
+            "en": "Server name",
+            "fr": "Nom du serveur",
+            "de": "Servername",
+            "es": "Nombre del servidor"
+          }
+        },
+        {
+          "key": "url",
+          "type": "string",
+          "label": {
+            "en": "Server address",
+            "fr": "Adresse du serveur",
+            "de": "Serveradresse",
+            "es": "Dirección del servidor"
+          }
+        },
+        {
+          "key": "reason",
+          "type": "string",
+          "label": {
+            "en": "Reason (code)",
+            "fr": "Raison (code)",
+            "de": "Grund (Code)",
+            "es": "Motivo (código)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "server_back_online",
+      "label": {
+        "en": "The Seafile server is back online",
+        "fr": "Le serveur Seafile est de nouveau joignable",
+        "de": "Der Seafile-Server ist wieder erreichbar",
+        "es": "El servidor Seafile vuelve a estar accesible"
+      },
+      "description": {
+        "en": "It answers again after an outage.",
+        "fr": "Il répond de nouveau après une panne.",
+        "de": "Er antwortet nach einem Ausfall wieder.",
+        "es": "Vuelve a responder tras un corte."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Seafile server",
+            "fr": "Serveur Seafile",
+            "de": "Seafile-Server",
+            "es": "Servidor Seafile"
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "server_name",
+          "type": "string",
+          "label": {
+            "en": "Server name",
+            "fr": "Nom du serveur",
+            "de": "Servername",
+            "es": "Nombre del servidor"
+          }
+        },
+        {
+          "key": "url",
+          "type": "string",
+          "label": {
+            "en": "Server address",
+            "fr": "Adresse du serveur",
+            "de": "Serveradresse",
+            "es": "Dirección del servidor"
+          }
+        },
+        {
+          "key": "offline_minutes",
+          "type": "number",
+          "label": {
+            "en": "Minutes offline",
+            "fr": "Minutes hors ligne",
+            "de": "Minuten offline",
+            "es": "Minutos sin conexión"
+          }
+        }
+      ]
+    },
+    {
+      "key": "quota_threshold_crossed",
+      "label": {
+        "en": "Quota threshold crossed",
+        "fr": "Seuil de quota dépassé",
+        "de": "Kontingentschwelle überschritten",
+        "es": "Umbral de cuota superado"
+      },
+      "description": {
+        "en": "The account went over the alert threshold of its quota (see the configuration).",
+        "fr": "Le compte a dépassé le seuil d'alerte de son quota (voir la configuration).",
+        "de": "Das Konto hat die Warnschwelle seines Kontingents überschritten (siehe Konfiguration).",
+        "es": "La cuenta ha superado el umbral de alerta de su cuota (ver la configuración)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Seafile server",
+            "fr": "Serveur Seafile",
+            "de": "Seafile-Server",
+            "es": "Servidor Seafile"
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "server_name",
+          "type": "string",
+          "label": {
+            "en": "Server name",
+            "fr": "Nom du serveur",
+            "de": "Servername",
+            "es": "Nombre del servidor"
+          }
+        },
+        {
+          "key": "quota_percent",
+          "type": "number",
+          "label": {
+            "en": "Quota used (%)",
+            "fr": "Quota utilisé (%)",
+            "de": "Kontingent belegt (%)",
+            "es": "Cuota usada (%)"
+          }
+        },
+        {
+          "key": "threshold",
+          "type": "number",
+          "label": {
+            "en": "Threshold (%)",
+            "fr": "Seuil (%)",
+            "de": "Schwelle (%)",
+            "es": "Umbral (%)"
+          }
+        },
+        {
+          "key": "used_gb",
+          "type": "number",
+          "label": {
+            "en": "Used (GB)",
+            "fr": "Utilisé (Go)",
+            "de": "Belegt (GB)",
+            "es": "Usado (GB)"
+          }
+        },
+        {
+          "key": "quota_gb",
+          "type": "number",
+          "label": {
+            "en": "Quota (GB)",
+            "fr": "Quota (Go)",
+            "de": "Kontingent (GB)",
+            "es": "Cuota (GB)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "library_updated",
+      "label": {
+        "en": "A library changed",
+        "fr": "Une bibliothèque a changé",
+        "de": "Eine Bibliothek hat sich geändert",
+        "es": "Una biblioteca ha cambiado"
+      },
+      "description": {
+        "en": "A file was added, edited or removed in a library the account sees.",
+        "fr": "Un fichier a été ajouté, modifié ou supprimé dans une bibliothèque visible du compte.",
+        "de": "In einer für das Konto sichtbaren Bibliothek wurde eine Datei hinzugefügt, geändert oder entfernt.",
+        "es": "Se añadió, modificó o eliminó un archivo en una biblioteca visible para la cuenta."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Library",
+            "fr": "Bibliothèque",
+            "de": "Bibliothek",
+            "es": "Biblioteca"
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "library_name",
+          "type": "string",
+          "label": {
+            "en": "Library name",
+            "fr": "Nom de la bibliothèque",
+            "de": "Name der Bibliothek",
+            "es": "Nombre de la biblioteca"
+          }
+        },
+        {
+          "key": "modifier",
+          "type": "string",
+          "label": {
+            "en": "Changed by",
+            "fr": "Modifiée par",
+            "de": "Geändert von",
+            "es": "Modificada por"
+          }
+        },
+        {
+          "key": "size_gb",
+          "type": "number",
+          "label": {
+            "en": "Size (GB)",
+            "fr": "Taille (Go)",
+            "de": "Größe (GB)",
+            "es": "Tamaño (GB)"
+          }
+        },
+        {
+          "key": "modified_at",
+          "type": "string",
+          "label": {
+            "en": "Changed at",
+            "fr": "Modifiée le",
+            "de": "Geändert am",
+            "es": "Modificada el"
+          }
+        }
+      ]
+    },
+    {
+      "key": "version_changed",
+      "label": {
+        "en": "The Seafile version changed",
+        "fr": "La version de Seafile a changé",
+        "de": "Die Seafile-Version hat sich geändert",
+        "es": "La versión de Seafile ha cambiado"
+      },
+      "description": {
+        "en": "The server was upgraded (or downgraded).",
+        "fr": "Le serveur a été mis à jour (ou rétrogradé).",
+        "de": "Der Server wurde aktualisiert (oder zurückgestuft).",
+        "es": "El servidor se ha actualizado (o se ha bajado de versión)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Seafile server",
+            "fr": "Serveur Seafile",
+            "de": "Seafile-Server",
+            "es": "Servidor Seafile"
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "server_name",
+          "type": "string",
+          "label": {
+            "en": "Server name",
+            "fr": "Nom du serveur",
+            "de": "Servername",
+            "es": "Nombre del servidor"
+          }
+        },
+        {
+          "key": "previous_version",
+          "type": "string",
+          "label": {
+            "en": "Previous version",
+            "fr": "Version précédente",
+            "de": "Vorherige Version",
+            "es": "Versión anterior"
+          }
+        },
+        {
+          "key": "version",
+          "type": "string",
+          "label": {
+            "en": "New version",
+            "fr": "Nouvelle version",
+            "de": "Neue Version",
+            "es": "Nueva versión"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "refresh_now",
+      "label": {
+        "en": "Read the Seafile server now",
+        "fr": "Lire le serveur Seafile maintenant",
+        "de": "Seafile-Server jetzt lesen",
+        "es": "Leer el servidor Seafile ahora"
+      },
+      "description": {
+        "en": "Refresh every device now, and hand the main values to the next actions.",
+        "fr": "Rafraîchit tous les appareils maintenant, et transmet les valeurs principales aux actions suivantes.",
+        "de": "Aktualisiert alle Geräte sofort und gibt die wichtigsten Werte an die nächsten Aktionen weiter.",
+        "es": "Actualiza todos los dispositivos ahora y pasa los valores principales a las acciones siguientes."
+      },
+      "timeout_seconds": 30,
+      "outputs": [
+        {
+          "key": "online",
+          "type": "boolean",
+          "label": {
+            "en": "Server online",
+            "fr": "Serveur en ligne",
+            "de": "Server online",
+            "es": "Servidor en línea"
+          }
+        },
+        {
+          "key": "version",
+          "type": "string",
+          "label": {
+            "en": "Version",
+            "fr": "Version",
+            "de": "Version",
+            "es": "Versión"
+          }
+        },
+        {
+          "key": "used_gb",
+          "type": "number",
+          "label": {
+            "en": "Used (GB)",
+            "fr": "Utilisé (Go)",
+            "de": "Belegt (GB)",
+            "es": "Usado (GB)"
+          }
+        },
+        {
+          "key": "quota_percent",
+          "type": "number",
+          "label": {
+            "en": "Quota used (%, -1 without quota)",
+            "fr": "Quota utilisé (%, -1 sans quota)",
+            "de": "Kontingent belegt (%, -1 ohne Kontingent)",
+            "es": "Cuota usada (%, -1 sin cuota)"
+          }
+        },
+        {
+          "key": "libraries",
+          "type": "number",
+          "label": {
+            "en": "Libraries",
+            "fr": "Bibliothèques",
+            "de": "Bibliotheken",
+            "es": "Bibliotecas"
+          }
+        }
+      ]
+    },
+    {
+      "key": "read_library",
+      "label": {
+        "en": "Read a Seafile library",
+        "fr": "Lire une bibliothèque Seafile",
+        "de": "Seafile-Bibliothek lesen",
+        "es": "Leer una biblioteca Seafile"
+      },
+      "description": {
+        "en": "Size, files and last change of one library, read now.",
+        "fr": "Taille, fichiers et dernière modification d'une bibliothèque, lus maintenant.",
+        "de": "Größe, Dateien und letzte Änderung einer Bibliothek, jetzt gelesen.",
+        "es": "Tamaño, archivos y último cambio de una biblioteca, leídos ahora."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "library",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Library",
+            "fr": "Bibliothèque",
+            "de": "Bibliothek",
+            "es": "Biblioteca"
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "found",
+          "type": "boolean",
+          "label": {
+            "en": "Library found",
+            "fr": "Bibliothèque trouvée",
+            "de": "Bibliothek gefunden",
+            "es": "Biblioteca encontrada"
+          }
+        },
+        {
+          "key": "name",
+          "type": "string",
+          "label": {
+            "en": "Name",
+            "fr": "Nom",
+            "de": "Name",
+            "es": "Nombre"
+          }
+        },
+        {
+          "key": "size_gb",
+          "type": "number",
+          "label": {
+            "en": "Size (GB)",
+            "fr": "Taille (Go)",
+            "de": "Größe (GB)",
+            "es": "Tamaño (GB)"
+          }
+        },
+        {
+          "key": "files",
+          "type": "number",
+          "label": {
+            "en": "Files",
+            "fr": "Fichiers",
+            "de": "Dateien",
+            "es": "Archivos"
+          }
+        },
+        {
+          "key": "modified_at",
+          "type": "string",
+          "label": {
+            "en": "Last change",
+            "fr": "Dernière modification",
+            "de": "Letzte Änderung",
+            "es": "Último cambio"
+          }
+        }
+      ]
+    }
+  ]
+}
